@@ -1,0 +1,172 @@
+---
+---
+
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ページが見つかりません - 画像生成ツール</title>
+</head>
+<body>
+    <div class="container">
+        <h1>🤔 ページが見つかりません</h1>
+        <p class="message">
+            お探しのページは見つかりませんでした。<br>
+            以下のリンクから目的のページにアクセスしてください。
+        </p>
+
+        <div class="links">
+            <a href="/image-generator/" class="link-button home">
+                🏠 ホームページ
+            </a>
+            <a href="/image-generator/generator/" class="link-button generator">
+                🎨 画像生成ツール
+            </a>
+        </div>
+
+        <div class="auto-redirect">
+            <p>5秒後に自動的にホームページに移動します...</p>
+            <div class="progress-bar">
+                <div class="progress"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 自動リダイレクト
+        let countdown = 5;
+        const progressBar = document.querySelector('.progress');
+        
+        const timer = setInterval(() => {
+            countdown--;
+            const progress = ((5 - countdown) / 5) * 100;
+            progressBar.style.width = progress + '%';
+            
+            if (countdown <= 0) {
+                clearInterval(timer);
+                window.location.href = '/image-generator/';
+            }
+        }, 1000);
+
+        // 手動でページ遷移した場合はタイマーをクリア
+        document.addEventListener('click', () => {
+            clearInterval(timer);
+        });
+    </script>
+</body>
+</html>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .container {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 60px 40px;
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+        max-width: 500px;
+        width: 100%;
+        text-align: center;
+        backdrop-filter: blur(10px);
+    }
+
+    h1 {
+        color: #333;
+        font-size: 2.5em;
+        margin-bottom: 30px;
+    }
+
+    .message {
+        color: #666;
+        font-size: 1.1em;
+        margin-bottom: 40px;
+        line-height: 1.6;
+    }
+
+    .links {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin-bottom: 50px;
+    }
+
+    .link-button {
+        display: inline-block;
+        padding: 15px 30px;
+        text-decoration: none;
+        border-radius: 50px;
+        font-size: 1.1em;
+        font-weight: 600;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .link-button.home {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .link-button.generator {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+    }
+
+    .link-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+    }
+
+    .auto-redirect {
+        border-top: 1px solid #e0e0e0;
+        padding-top: 30px;
+    }
+
+    .auto-redirect p {
+        color: #888;
+        font-size: 0.9em;
+        margin-bottom: 15px;
+    }
+
+    .progress-bar {
+        width: 100%;
+        height: 4px;
+        background: #e0e0e0;
+        border-radius: 2px;
+        overflow: hidden;
+    }
+
+    .progress {
+        height: 100%;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+        border-radius: 2px;
+        transition: width 1s linear;
+        width: 0%;
+    }
+
+    @media (max-width: 600px) {
+        .container {
+            padding: 40px 25px;
+        }
+
+        h1 {
+            font-size: 2em;
+        }
+
+        .links {
+            gap: 12px;
+        }
+    }
+</style>
