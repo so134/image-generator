@@ -16,15 +16,9 @@
                 }
             }
 
-            // Handle direct access to generator page
+            // Handle any path under /image-generator/ by redirecting to main page
             var path = l.pathname;
             if (path.indexOf('/image-generator/') === 0) {
-                // If accessing /image-generator/generator/ directly, redirect there
-                if (path.indexOf('/image-generator/generator') >= 0) {
-                    l.replace(l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') + '/image-generator/generator/');
-                    return;
-                }
-                // Otherwise redirect to home
                 l.replace(l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') + '/image-generator/');
             }
         }(window.location));
