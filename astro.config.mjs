@@ -3,6 +3,8 @@ import react from '@astrojs/react';
 
 export default defineConfig({
   integrations: [react()],
+  site: 'https://so134.github.io',
+  base: '/image-generator',
   server: {
     port: 4321,
     host: true
