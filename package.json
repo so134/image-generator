@@ -1,0 +1,23 @@
+{
+  "name": "black-image-generator",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Generate black PNG images with Canvas API and download them locally",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "astro": "^5.0.0",
+    "@astrojs/react": "^4.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "typescript": "^5.0.0"
+  }
+}
