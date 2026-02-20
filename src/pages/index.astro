@@ -241,6 +241,41 @@
         color: white;
       }
 
+      .aspect-ratio-group {
+        margin-bottom: 25px;
+      }
+
+      .aspect-ratio-buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .aspect-btn {
+        flex: 1;
+        padding: 10px 15px;
+        border: 2px solid #ddd;
+        background: white;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 14px;
+        font-weight: 500;
+      }
+
+      .aspect-btn:hover {
+        border-color: #667eea;
+        background: #f0f4ff;
+        transform: translateY(-2px);
+        box-shadow: 0 3px 10px rgba(102, 126, 234, 0.2);
+      }
+
+      .aspect-btn.active {
+        border-color: #667eea;
+        background: #667eea;
+        color: white;
+      }
+
       @media (max-width: 600px) {
         .container {
           padding: 20px;
@@ -273,6 +308,16 @@
         <div class="input-group">
           <label for="height">高さ (px)</label>
           <input type="number" id="height" min="1" max="4000" value="600" placeholder="例: 600">
+        </div>
+      </div>
+
+      <div class="aspect-ratio-group">
+        <label>アスペクト比（幅基準）</label>
+        <div class="aspect-ratio-buttons">
+          <button type="button" class="aspect-btn" data-ratio="16:9">16:9</button>
+          <button type="button" class="aspect-btn" data-ratio="4:3">4:3</button>
+          <button type="button" class="aspect-btn" data-ratio="1:1">1:1</button>
+          <button type="button" class="aspect-btn" data-ratio="3:4">3:4</button>
         </div>
       </div>
 
@@ -371,6 +416,73 @@
       const textColor = document.getElementById('textColor');
       const fontWeight = document.getElementById('fontWeight');
       let textPosition = 'middle-center';
+
+      // アスペクト比ボタンの処理
+      document.querySelectorAll('.aspect-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          // アクティブクラスの切り替え
+          document.querySelectorAll('.aspect-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          
+          // 幅を基準に高さを計算
+          const width = parseInt(widthInput.value) || 800;
+          const ratio = btn.dataset.ratio;
+          let newHeight;
+          
+          switch(ratio) {
+            case '16:9':
+              newHeight = Math.round(width * 9 / 16);
+              break;
+            case '4:3':
+              newHeight = Math.round(width * 3 / 4);
+              break;
+            case '1:1':
+              newHeight = width;
+              break;
+            case '3:4':
+              newHeight = Math.round(width * 4 / 3);
+              break;
+            default:
+              return;
+          }
+          
+          heightInput.value = newHeight;
+        });
+      });
+
+      // 幅入力が変更されたときにアクティブなアスペクト比を維持
+      widthInput.addEventListener('input', (e) => {
+        const activeBtn = document.querySelector('.aspect-btn.active');
+        if (activeBtn) {
+          const width = parseInt(e.target.value) || 800;
+          const ratio = activeBtn.dataset.ratio;
+          let newHeight;
+          
+          switch(ratio) {
+            case '16:9':
+              newHeight = Math.round(width * 9 / 16);
+              break;
+            case '4:3':
+              newHeight = Math.round(width * 3 / 4);
+              break;
+            case '1:1':
+              newHeight = width;
+              break;
+            case '3:4':
+              newHeight = Math.round(width * 4 / 3);
+              break;
+            default:
+              return;
+          }
+          
+          heightInput.value = newHeight;
+        }
+      });
+
+      // 高さ入力が手動で変更されたときはアスペクト比ボタンの選択を解除
+      heightInput.addEventListener('input', (e) => {
+        document.querySelectorAll('.aspect-btn').forEach(b => b.classList.remove('active'));
+      });
 
       // 背景タイプの切り替え
       document.querySelectorAll('input[name="bgType"]').forEach(radio => {
