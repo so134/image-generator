@@ -179,6 +179,69 @@
         border-color: #667eea;
       }
 
+      input[type="text"], textarea {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        font-size: 16px;
+        transition: border-color 0.3s;
+      }
+
+      input[type="text"]:focus, textarea:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+
+      textarea {
+        resize: vertical;
+        min-height: 80px;
+        font-family: inherit;
+      }
+
+      .text-settings {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr;
+        gap: 15px;
+        margin-top: 10px;
+      }
+
+      .text-color-picker {
+        width: 100%;
+        height: 40px;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+
+      .position-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .position-btn {
+        padding: 10px;
+        border: 2px solid #ddd;
+        background: white;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 14px;
+      }
+
+      .position-btn:hover {
+        border-color: #667eea;
+        background: #f0f4ff;
+      }
+
+      .position-btn.active {
+        border-color: #667eea;
+        background: #667eea;
+        color: white;
+      }
+
       @media (max-width: 600px) {
         .container {
           padding: 20px;
@@ -190,6 +253,10 @@
 
         .color-options {
           flex-direction: column;
+        }
+
+        .text-settings {
+          grid-template-columns: 1fr;
         }
       }
     </style>
@@ -242,6 +309,40 @@
         </select>
       </div>
 
+      <div class="input-group">
+        <label for="customText">テキスト（オプション）</label>
+        <textarea id="customText" placeholder="画像に表示したいテキストを入力..."></textarea>
+        <div class="text-settings">
+          <select id="fontSize">
+            <option value="16">16px</option>
+            <option value="24">24px</option>
+            <option value="32" selected>32px</option>
+            <option value="48">48px</option>
+            <option value="64">64px</option>
+            <option value="72">72px</option>
+            <option value="96">96px</option>
+            <option value="128">128px</option>
+          </select>
+          <input type="color" id="textColor" class="text-color-picker" value="#ffffff">
+          <select id="fontWeight">
+            <option value="normal">標準</option>
+            <option value="bold" selected>太字</option>
+          </select>
+        </div>
+        <label style="margin-top: 15px; margin-bottom: 5px; display: block;">テキスト位置</label>
+        <div class="position-grid">
+          <button type="button" class="position-btn" data-position="top-left">左上</button>
+          <button type="button" class="position-btn" data-position="top-center">中央上</button>
+          <button type="button" class="position-btn" data-position="top-right">右上</button>
+          <button type="button" class="position-btn" data-position="middle-left">左中</button>
+          <button type="button" class="position-btn active" data-position="middle-center">中央</button>
+          <button type="button" class="position-btn" data-position="middle-right">右中</button>
+          <button type="button" class="position-btn" data-position="bottom-left">左下</button>
+          <button type="button" class="position-btn" data-position="bottom-center">中央下</button>
+          <button type="button" class="position-btn" data-position="bottom-right">右下</button>
+        </div>
+      </div>
+
       <div class="button-group">
         <button id="generateBtn">画像を生成</button>
         <button id="downloadBtn" disabled>ダウンロード</button>
@@ -266,6 +367,11 @@
       const colorPickerWrapper = document.getElementById('colorPickerWrapper');
       const patternGroup = document.getElementById('patternGroup');
       const patternSelect = document.getElementById('pattern');
+      const customText = document.getElementById('customText');
+      const fontSize = document.getElementById('fontSize');
+      const textColor = document.getElementById('textColor');
+      const fontWeight = document.getElementById('fontWeight');
+      let textPosition = 'middle-center';
 
       // 背景タイプの切り替え
       document.querySelectorAll('input[name="bgType"]').forEach(radio => {
@@ -280,6 +386,15 @@
             colorPickerWrapper.style.display = 'none';
             patternGroup.style.display = 'none';
           }
+        });
+      });
+
+      // テキスト位置ボタンの処理
+      document.querySelectorAll('.position-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          document.querySelectorAll('.position-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          textPosition = btn.dataset.position;
         });
       });
 
@@ -376,6 +491,23 @@
         }
       }
 
+      // テキストの位置を計算
+      function getTextPosition(width, height, position) {
+        const padding = 50;
+        const positions = {
+          'top-left': { x: padding, y: padding, align: 'left', baseline: 'top' },
+          'top-center': { x: width / 2, y: padding, align: 'center', baseline: 'top' },
+          'top-right': { x: width - padding, y: padding, align: 'right', baseline: 'top' },
+          'middle-left': { x: padding, y: height / 2, align: 'left', baseline: 'middle' },
+          'middle-center': { x: width / 2, y: height / 2, align: 'center', baseline: 'middle' },
+          'middle-right': { x: width - padding, y: height / 2, align: 'right', baseline: 'middle' },
+          'bottom-left': { x: padding, y: height - padding, align: 'left', baseline: 'bottom' },
+          'bottom-center': { x: width / 2, y: height - padding, align: 'center', baseline: 'bottom' },
+          'bottom-right': { x: width - padding, y: height - padding, align: 'right', baseline: 'bottom' }
+        };
+        return positions[position] || positions['middle-center'];
+      }
+
       // 画像生成
       function generateImage() {
         const width = parseInt(widthInput.value) || 800;
@@ -398,15 +530,58 @@
           drawPattern(ctx, width, height, patternSelect.value);
         }
         
-        // サイズ情報をテキストで表示
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-        ctx.fillRect(width/2 - 100, height/2 - 30, 200, 60);
-        
-        ctx.font = 'bold 24px Arial';
-        ctx.fillStyle = '#333';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText(`${width} × ${height}`, width/2, height/2);
+        // カスタムテキストの描画
+        const text = customText.value.trim();
+        if (text) {
+          const size = parseInt(fontSize.value);
+          const weight = fontWeight.value;
+          const color = textColor.value;
+          const pos = getTextPosition(width, height, textPosition);
+          
+          // テキストスタイル設定
+          ctx.font = `${weight} ${size}px Arial, sans-serif`;
+          ctx.fillStyle = color;
+          ctx.textAlign = pos.align;
+          ctx.textBaseline = pos.baseline;
+          
+          // 複数行のテキストに対応
+          const lines = text.split('\n');
+          const lineHeight = size * 1.2;
+          
+          lines.forEach((line, index) => {
+            let y = pos.y;
+            if (pos.baseline === 'top') {
+              y = pos.y + (index * lineHeight);
+            } else if (pos.baseline === 'middle') {
+              y = pos.y - ((lines.length - 1) * lineHeight / 2) + (index * lineHeight);
+            } else if (pos.baseline === 'bottom') {
+              y = pos.y - ((lines.length - 1 - index) * lineHeight);
+            }
+            
+            // 影を追加して読みやすくする
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+            ctx.shadowBlur = 4;
+            ctx.shadowOffsetX = 2;
+            ctx.shadowOffsetY = 2;
+            ctx.fillText(line, pos.x, y);
+            
+            // 影をリセット
+            ctx.shadowColor = 'transparent';
+            ctx.shadowBlur = 0;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+          });
+        } else {
+          // テキストがない場合はサイズ情報を表示
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+          ctx.fillRect(width/2 - 100, height/2 - 30, 200, 60);
+          
+          ctx.font = 'bold 24px Arial';
+          ctx.fillStyle = '#333';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(`${width} × ${height}`, width/2, height/2);
+        }
         
         // キャンバス表示
         canvasContainer.style.display = 'block';
